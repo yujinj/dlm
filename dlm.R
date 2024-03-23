@@ -1,7 +1,7 @@
 library(formula.tools)
 #' Function for distributional regressions
 #' @param formula 
-#' @param test.function The function that generates a vector of test function outputs from a given data point
+#' @param test.function The function that generates a vector of test function outputs from a given data
 #' @param data The list of data sets
 #' @examples
 #' 
