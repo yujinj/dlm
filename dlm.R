@@ -11,6 +11,9 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   call = match.call()
   terms = get.vars(formula, data = names(data))
   
+  # Currently I don't handle the case where the inverse does not exist
+  # In GTEx, with large L, if we do whitening transformation, the resulting weights are almost equally distributed
+  
   # Whitening Transformation
   phi_matrix = lapply(data[names(data) %in% terms], FUN=test.function)
   mat <- simplify2array(lapply(phi_matrix, colMeans))
