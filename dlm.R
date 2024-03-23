@@ -32,16 +32,15 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   # Apply LM Function
   lm.fit = lm(new_formula, offset = mat[,terms[2]], data = as.data.frame(mat))
   summ = summary(lm.fit)
+  
+  # Add / Change some statistics
   summ$call = call
-  #old_fstat = ((summ$coefficients[,1]) %*% solve(summ$cov.unscaled) %*% (summ$coefficients[,1]))/summ$sigma^2/(length(terms)-2)
   new_fstat = ((summ$coefficients[,1]- 1/length(terms[-1])) %*% solve(summ$cov.unscaled) %*% (summ$coefficients[,1] - 1/length(terms[-1])))/summ$sigma^2/(length(terms)-2)
   summ$fstatistic[1] = new_fstat
   new_rsq = 1 - sum((summ$residuals)^2)/ sum((mat[,terms[1]] - rowMeans(mat[,terms[-1]]))^2)
   new_adj_rsq = 1 - (1-new_rsq) * (summ$df[1] + summ$df[2]) / summ$df[2]
   summ$r.squared = new_rsq
   summ$adj.r.squared = new_adj_rsq
-  
-  # Include Offset
   est = 1 - sum(summ$coefficients[,1])
   sd =  sqrt(sum(summ$cov.unscaled)) * summ$sigma
   tstat = est/sd
@@ -50,6 +49,5 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   dimnames(summ$coefficients)[[1]] = c(terms[-1])
   summ$X = mat
   
-  # R-squared is based on using just the offset data
   return(summ)
 }
