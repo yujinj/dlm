@@ -1,4 +1,3 @@
-library(formula.tools)
 #' Function for distributional regressions
 #' @param formula 
 #' @param test.function The function that generates a vector of test function outputs from a given data
@@ -7,6 +6,7 @@ library(formula.tools)
 #' 
 #' @export
 #' 
+library(formula.tools)
 dlm <- function(formula, test.function, data, whitening = TRUE){
   
   call = match.call()
@@ -19,7 +19,7 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   sigma_phi = cov(phi_matrix)
   sds = sqrt(diag(sigma_phi))
   mat = apply(mat0, 2, function(x){return(x/sds)})
-  mat = new_mat[,terms]
+  mat = mat[,terms]
   
   # Whitening Transformation
   if (whitening){
@@ -39,13 +39,6 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   # Apply LM Function
   lm.fit = lm(new_formula, offset = mat[,terms[2]], data = as.data.frame(mat))
   summ = summary(lm.fit)
-  
-  pdf("Downloads/resids.pdf", width = 6, height = 5)
-  plot(lm.fit, which = 1)
-  dev.off()
-  pdf("Downloads/qqplots.pdf", width = 6, height = 5)
-  plot(lm.fit, which = 2)
-  dev.off()
   
   # Add / Change Statistics
   summ$call = call
