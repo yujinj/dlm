@@ -53,8 +53,10 @@ quantile(cor_phi[row(cor_phi)!=col(cor_phi)], c(0.05, 0.95))
     ##          5%         95% 
     ## -0.05839611  0.05864404
 
-**Example 1**: The target tissue is Brain_Cortex. Other available
-tissues are Adipose_Subcutaneous, Adipose_Visceral_Omentum,
+### Example in the paper
+
+The target tissue is Brain_Cortex. Other available tissues are
+Adipose_Subcutaneous, Adipose_Visceral_Omentum,
 Brain_Frontal_Cortex_BA9, and Brain_Cerebellum.
 
 ``` r
@@ -106,7 +108,9 @@ pairs(dlm.fit$X, cex = 0.2, labels = c("Brain\nCortex", "Adipose\nSubcutaneous",
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-**Example 2**: We randomly select 6 tissues: Artery_Aorta, Vagina,
+### More Examples
+
+We randomly select 6 tissues: Artery_Aorta, Vagina,
 Esophagus_Gastroesophageal_Junction, Esophagus_Muscularis,
 Muscle_Skeletal, Skin_Not_Sun_Exposed_Suprapubic.
 

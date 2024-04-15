@@ -48,7 +48,9 @@ cor_phi = cor(phi_matrix)
 quantile(cor_phi[row(cor_phi)!=col(cor_phi)], c(0.05, 0.95))
 ```
 
-**Example 1**: The target tissue is Brain_Cortex. Other available tissues are Adipose_Subcutaneous, Adipose_Visceral_Omentum, Brain_Frontal_Cortex_BA9, and Brain_Cerebellum.
+### Example in the paper
+
+The target tissue is Brain_Cortex. Other available tissues are Adipose_Subcutaneous, Adipose_Visceral_Omentum, Brain_Frontal_Cortex_BA9, and Brain_Cerebellum.
 
 ```{r}
 dlm.fit = dlm(Brain_Cortex ~ Adipose_Subcutaneous + 
@@ -70,7 +72,9 @@ We present a pair plot where each row and column represents one tissue, and each
 pairs(dlm.fit$X, cex = 0.2, labels = c("Brain\nCortex", "Adipose\nSubcutaneous", "Adipose\nVisceral\nOmentum", "Brain\nFrontal\nCortex", "Brain\nCerebellum"))
 ```
 
-**Example 2**: We randomly select 6 tissues: Artery_Aorta, Vagina, Esophagus_Gastroesophageal_Junction, Esophagus_Muscularis, Muscle_Skeletal, Skin_Not_Sun_Exposed_Suprapubic. 
+### More Examples
+
+We randomly select 6 tissues: Artery_Aorta, Vagina, Esophagus_Gastroesophageal_Junction, Esophagus_Muscularis, Muscle_Skeletal, Skin_Not_Sun_Exposed_Suprapubic. 
 
 ```{r}
 set.seed(1000)
