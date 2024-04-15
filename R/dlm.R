@@ -8,7 +8,7 @@
 #'
 dlm <- function(formula, test.function, data, whitening = TRUE){
   call = match.call()
-  terms = get.vars(formula, data = names(data))
+  terms = formula.tools::get.vars(formula, data = names(data))
 
   for(term in terms){
     if(!(term %in% names(data))) stop(paste0("Data set named ", term, " is not found."))
