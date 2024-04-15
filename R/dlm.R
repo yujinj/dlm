@@ -6,29 +6,33 @@ library(formula.tools)
 #' @examples
 #' 
 #' @export
+#' 
 dlm <- function(formula, test.function, data, whitening = TRUE){
   
   call = match.call()
   terms = get.vars(formula, data = names(data))
   
-  # Currently I don't handle the case where the inverse does not exist
-  # In GTEx, with large L, if we do whitening transformation, the resulting weights are almost equally distributed
+  phi_matrix = lapply(data[names(data) %in% terms], FUN=test.function)
+  mat0 <- simplify2array(lapply(phi_matrix, colMeans))
+  colnames(mat0) <- names(phi_matrix)
+  phi_matrix = do.call(rbind, phi_matrix)
+  sigma_phi = cov(phi_matrix)
+  sds = sqrt(diag(sigma_phi))
+  mat = apply(mat0, 2, function(x){return(x/sds)})
+  mat = new_mat[,terms]
   
   # Whitening Transformation
-  phi_matrix = lapply(data[names(data) %in% terms], FUN=test.function)
-  mat <- simplify2array(lapply(phi_matrix, colMeans))
-  colnames(mat) <- names(phi_matrix)
   if (whitening){
-    phi_matrix = do.call(rbind, phi_matrix)
-    phi_matrix = apply(phi_matrix, 2, function(x){x/sd(x)})
-    sigma_phi = cov(phi_matrix)
     E = eigen(sigma_phi)
-    sqrtinv_sigma_phi = E$vectors %*% diag(1/sqrt(E$values)) %*% t(E$vectors)
-    mat <- sqrtinv_sigma_phi %*% mat
-  }
-  mat <- mat[,terms]
+    D = E$values
+    D[abs(E$values)>1e-5] = 1/sqrt(D[abs(E$values)>1e-5])
+    D[abs(E$values)<=1e-5] = 0
+    sqrtinv_sigma_phi = E$vectors %*% diag(D) %*% t(E$vectors)
+    mat <- sqrtinv_sigma_phi %*% mat0
+    mat = mat[,terms]
+  } 
   
-  # Generate New Formula (Reparemetrization)
+  # Generate New Formula (Reparametrization)
   new_formula = paste(c(sapply(terms[-c(1,2)], function(x) paste0("I(", x, "-", terms[2],")")), 0), collapse = " + ")
   new_formula = as.formula(paste(c(terms[1], new_formula), collapse = " ~ "))
   
@@ -36,7 +40,14 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   lm.fit = lm(new_formula, offset = mat[,terms[2]], data = as.data.frame(mat))
   summ = summary(lm.fit)
   
-  # Add / Change some statistics
+  pdf("Downloads/resids.pdf", width = 6, height = 5)
+  plot(lm.fit, which = 1)
+  dev.off()
+  pdf("Downloads/qqplots.pdf", width = 6, height = 5)
+  plot(lm.fit, which = 2)
+  dev.off()
+  
+  # Add / Change Statistics
   summ$call = call
   new_fstat = ((summ$coefficients[,1]- 1/length(terms[-1])) %*% solve(summ$cov.unscaled) %*% (summ$coefficients[,1] - 1/length(terms[-1])))/summ$sigma^2/(length(terms)-2)
   summ$fstatistic[1] = new_fstat
@@ -50,7 +61,10 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   pval = 2*(1-pt(abs(tstat), df = summ$df[2]))
   summ$coefficients = rbind(c(est, sd, tstat, pval), summ$coefficients)
   dimnames(summ$coefficients)[[1]] = c(terms[-1])
+  summ$terms <- NULL
+  summ$aliased <- any(summ$aliased)
   summ$X = mat
   
   return(summ)
 }
+

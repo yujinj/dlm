@@ -27,7 +27,11 @@ for (name in tissue_names) {
 for (name in tissue_names) {
   GTEx_data[[name]] <- GTEx_data[[name]][, intersect_names]}
 
-# Select tissues that have more than 150 samples
-#n_samples <- unlist(lapply(GTEx_data, nrow))
-#GTEx_data <- GTEx_data[n_samples >= 150]
-#tissue_names <- tissue_names[n_samples >= 150] 
+# There are in total 16622 genes. 
+# We randomly sample 5000 to reduce the size of the data set so that we can include it into our package.  
+new_intersect_names = intersect_names[sample.int(length(intersect_names), size = 5000, replace = FALSE)]
+for (name in tissue_names){
+  GTEx_data[[name]] <- GTEx_data[[name]][, new_intersect_names]
+}
+
+save(GTEx_data, file = 'Documents/dlm/data/GTEx_data.rda')
