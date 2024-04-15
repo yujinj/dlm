@@ -1,20 +1,19 @@
 #' Function for distributional regressions
-#' @param formula 
+#' @param formula
 #' @param test.function The function that generates a vector of test function outputs from a given data
 #' @param data The list of data sets
 #' @examples
-#' 
+#'
 #' @export
-#' 
+#'
 dlm <- function(formula, test.function, data, whitening = TRUE){
-  library(formula.tools)
   call = match.call()
   terms = get.vars(formula, data = names(data))
-  
+
   for(term in terms){
     if(!(term %in% names(data))) stop(paste0("Data set named ", term, " is not found."))
   }
-  
+
   phi_matrix = lapply(data[names(data) %in% terms], FUN=test.function)
   mat0 <- simplify2array(lapply(phi_matrix, colMeans))
   colnames(mat0) <- names(phi_matrix)
@@ -23,7 +22,7 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   sds = sqrt(diag(sigma_phi))
   mat = apply(mat0, 2, function(x){return(x/sds)})
   mat = mat[,terms]
-  
+
   # Whitening Transformation
   if (whitening){
     E = eigen(sigma_phi)
@@ -33,16 +32,16 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
     sqrtinv_sigma_phi = E$vectors %*% diag(D) %*% t(E$vectors)
     mat <- sqrtinv_sigma_phi %*% mat0
     mat = mat[,terms]
-  } 
-  
+  }
+
   # Generate New Formula (Reparametrization)
   new_formula = paste(c(sapply(terms[-c(1,2)], function(x) paste0("I(", x, "-", terms[2],")")), 0), collapse = " + ")
   new_formula = as.formula(paste(c(terms[1], new_formula), collapse = " ~ "))
-  
+
   # Apply LM Function
   lm.fit = lm(new_formula, offset = mat[,terms[2]], data = as.data.frame(mat))
   summ = summary(lm.fit)
-  
+
   # Add / Change Statistics
   summ$call = call
   new_fstat = ((summ$coefficients[,1]- 1/length(terms[-1])) %*% solve(summ$cov.unscaled) %*% (summ$coefficients[,1] - 1/length(terms[-1])))/summ$sigma^2/(length(terms)-2)
@@ -60,7 +59,7 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   summ$terms <- NULL
   summ$aliased <- any(summ$aliased)
   summ$X = mat
-  
+
   return(summ)
 }
 
