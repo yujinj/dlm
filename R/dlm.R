@@ -6,9 +6,8 @@
 #' 
 #' @export
 #' 
-library(formula.tools)
 dlm <- function(formula, test.function, data, whitening = TRUE){
-  
+  library(formula.tools)
   call = match.call()
   terms = get.vars(formula, data = names(data))
   
