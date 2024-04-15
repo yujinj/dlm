@@ -7,7 +7,7 @@ knitr::opts_chunk$set(echo = TRUE)
 source("R/dlm.R")
 ```
 
-# Data Fusion under Distributional Uncertainty
+# Distribution Generalization under Dense Distributional Shifts
 
 ## How to install
 
@@ -48,7 +48,7 @@ cor_phi = cor(phi_matrix)
 quantile(cor_phi[row(cor_phi)!=col(cor_phi)], c(0.05, 0.95))
 ```
 
-### Example in the paper
+### Example in the Paper
 
 The target tissue is Brain_Cortex. Other available tissues are Adipose_Subcutaneous, Adipose_Visceral_Omentum, Brain_Frontal_Cortex_BA9, and Brain_Cerebellum.
 

@@ -1,5 +1,5 @@
 
-# Data Fusion under Distributional Uncertainty
+# Distribution Generalization under Dense Distributional Shifts
 
 ## How to install
 
@@ -53,7 +53,7 @@ quantile(cor_phi[row(cor_phi)!=col(cor_phi)], c(0.05, 0.95))
     ##          5%         95% 
     ## -0.05839611  0.05864404
 
-### Example in the paper
+### Example in the Paper
 
 The target tissue is Brain_Cortex. Other available tissues are
 Adipose_Subcutaneous, Adipose_Visceral_Omentum,
