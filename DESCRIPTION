@@ -1,7 +1,7 @@
 Package: dlm
 Title: Distribution generalization under dense distributional shifts
 Version: 0.1.0
-Authors@R: Yujin Jeong, Dominik Rothenhaeusler
+Authors: Yujin Jeong, Dominik Rothenhaeusler
 Maintainer: Yujin Jeong <yujinj@stanford.edu>
 Description: This package provides functions for distributional regressions under dense distributional shifts. 
 License: GPLv3
