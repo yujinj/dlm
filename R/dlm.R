@@ -5,7 +5,7 @@
 #' @examples
 #'
 #' @export
-#'
+#' @importFrom fromula.tools get.vars
 dlm <- function(formula, test.function, data, whitening = TRUE){
   call = match.call()
   terms = formula.tools::get.vars(formula, data = names(data))
