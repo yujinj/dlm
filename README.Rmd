@@ -4,7 +4,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("dlm.R")
+source("R/dlm.R")
 ```
 
 # Data Fusion under Distributional Uncertainty
@@ -15,30 +15,31 @@ source("dlm.R")
 2. The latest development version can then be installied using `devtools::install_github("yujinj/dlm")`.
 
 ```{r, eval = FALSE}
-#devtools::install_github("yujinj/dlm")
+devtools::install_github("yujinj/dlm")
 library(dlm)
 ```
 
 ## Usage: Applications on GTEx Data
 
-In this example, we use the [GTEx V6](https://www.gtexportal.org/home/downloads/adult-gtex/qtl) gene expression data. The data has already been preprocessed and normalized. We simply filter out genes to only include those observed in all tissues. 
+In this example, we use the [GTEx V6](https://www.gtexportal.org/home/downloads/adult-gtex/qtl) gene expression data. The data has already been preprocessed and normalized. We simply filter out genes to only include those observed in all tissues and then randomly sample 5000 genes to reduce the size of the data set. The preprocessed data set is provided in the package as 'GTEx_data'.
 
 ```{r, include = FALSE}
-load("~/Documents/dlm/GTEx_preprocessed.RData")
+load("~/Documents/dlm/data/GTEx_data.rda")
 ```
 
 First, one has to choose $L$ different test functions. Then, define a single test function that takes a data set and applies your choice of $L$ test functions. If the sample size of the data set is $n$, the output should be $n \times L$. In this GTEx example, we choose $L = 1000$ test functions as the products of gene-expressions for randomly selected $L$ gene-pairs.
 
 ```{r}
-set.seed(1)
+set.seed(1000)
 L = 1000
-names1 <- sample(intersect_names, size=L, replace=FALSE)
-names2 <- sample(intersect_names, size=L, replace=FALSE)
+names = colnames(GTEx_data[[1]])
+names1 <- sample(names, size=L, replace=FALSE)
+names2 <- sample(names, size=L, replace=FALSE)
 test.function <- function(data){return(data[,names1] * data[,names2])}
 phi <- function(data){return(data[,names1] * data[,names2])}
 ```
 
-We obtain the correlation matrix of 1000 test functions and check that they are mostly weakly correlated. For example, 90% of the correlations are within the range: [-0.05876375,  0.05958139].
+We obtain the correlation matrix of 1000 test functions and check that they are mostly weakly correlated. For example, 90% of the correlations are within the range: [-0.059,  0.059].
 
 ```{r}
 phi_matrix = lapply(GTEx_data, FUN=phi)
@@ -47,16 +48,13 @@ cor_phi = cor(phi_matrix)
 quantile(cor_phi[row(cor_phi)!=col(cor_phi)], c(0.05, 0.95))
 ```
 
-Then, we fit distributional regressions. 
-
-**Example 1**: The target tissue is Adipose Subcutaneous. Other available tissues are Stomach, Colon Transverse, Skin (not sun exposed), Artery Aorta, and Adipose Visceral Omentum. 
+**Example 1**: The target tissue is Brain_Cortex. Other available tissues are Adipose_Subcutaneous, Adipose_Visceral_Omentum, Brain_Frontal_Cortex_BA9, and Brain_Cerebellum.
 
 ```{r}
-dlm.fit = dlm(Adipose_Subcutaneous ~ Stomach + 
-                                     Colon_Transverse + 
-                                     Skin_Not_Sun_Exposed_Suprapubic + 
-                                     Artery_Aorta + 
-                                     Adipose_Visceral_Omentum, 
+dlm.fit = dlm(Brain_Cortex ~ Adipose_Subcutaneous + 
+                             Adipose_Visceral_Omentum +
+                             Brain_Frontal_Cortex_BA9 +
+                             Brain_Cerebellum,
               test.function = phi, 
               data = GTEx_data, 
               whitening = FALSE)
@@ -68,18 +66,26 @@ dlm.fit
 
 We present a pair plot where each row and column represents one tissue, and each dot represents the mean of the test function. In our case, the mean of the test function corresponds to the covariance of a randomly selected gene-pair. We can observe some linear relationships between tissues, which are reflected in our 'dlm' results.
 
-```{r, echo = FALSE, fig.height = 6}
-pairs(dlm.fit$X, cex = 0.3)
+```{R}
+pairs(dlm.fit$X, cex = 0.2, labels = c("Brain\nCortex", "Adipose\nSubcutaneous", "Adipose\nVisceral\nOmentum", "Brain\nFrontal\nCortex", "Brain\nCerebellum"))
 ```
 
-**Example 2**: The target tissue is Stomach. Other available tissues are Adipose Subcutaneous, Colon Transverse, Skin (not sun exposed), Artery Aorta, and Adipose Visceral Omentum. 
+**Example 2**: We randomly select 6 tissues: Artery_Aorta, Vagina, Esophagus_Gastroesophageal_Junction, Esophagus_Muscularis, Muscle_Skeletal, Skin_Not_Sun_Exposed_Suprapubic. 
 
 ```{r}
-dlm.fit = dlm(Stomach ~ Adipose_Subcutaneous + 
-                        Colon_Transverse + 
-                        Skin_Not_Sun_Exposed_Suprapubic + 
-                        Artery_Aorta + 
-                        Adipose_Visceral_Omentum, 
+set.seed(1000)
+sampled_tissues = sample(names(GTEx_data), 6)
+sampled_tissues
+```
+
+Let the target tissue be Artery_Aorta.
+
+```{r}
+dlm.fit = dlm(Artery_Aorta ~ Vagina + 
+                             Esophagus_Gastroesophageal_Junction + 
+                             Esophagus_Muscularis + 
+                             Muscle_Skeletal +
+                             Skin_Not_Sun_Exposed_Suprapubic,
               test.function = phi, 
               data = GTEx_data, 
               whitening = FALSE)
@@ -89,9 +95,23 @@ dlm.fit = dlm(Stomach ~ Adipose_Subcutaneous +
 dlm.fit
 ```
 
-We present a pair plot where each row and column represents one tissue, and each dot represents the mean of the test function. In our case, the mean of the test function corresponds to the covariance of a randomly selected gene-pair. We can observe some linear relationships between tissues, which are reflected in our 'dlm' results.
-
-```{r, echo = FALSE, fig.height = 6}
-pairs(dlm.fit$X, cex = 0.3)
+```{R}
+pairs(dlm.fit$X, cex = 0.2, labels = gsub("_", "\n", sampled_tissues))
 ```
 
+Let the target tissue be Esophagus_Muscularis.
+
+```{r}
+dlm.fit = dlm(Esophagus_Muscularis ~ Artery_Aorta +
+                                     Vagina + 
+                                     Esophagus_Gastroesophageal_Junction + 
+                                     Muscle_Skeletal +
+                                     Skin_Not_Sun_Exposed_Suprapubic,
+              test.function = phi, 
+              data = GTEx_data, 
+              whitening = FALSE)
+```
+
+```{r}
+dlm.fit
+```
