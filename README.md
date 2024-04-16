@@ -9,7 +9,7 @@
     `devtools::install_github("yujinj/dlm")`.
 
 ``` r
-devtools::install_github("yujinj/dlm")
+#devtools::install_github("yujinj/dlm")
 library(dlm)
 ```
 
