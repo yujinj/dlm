@@ -1,5 +1,5 @@
 
-# Distribution Generalization under Dense Distributional Shifts
+# Out-of-Distribution Generalization under Random, Dense Distributional Shifts
 
 ## How to install
 
