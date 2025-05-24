@@ -1,5 +1,5 @@
 
-# Out-of-Distribution Generalization under Random, Dense Distributional Shifts
+# Distribution Generalization under Dense Distributional Shifts
 
 ## How to install
 
@@ -9,7 +9,7 @@
     `devtools::install_github("yujinj/dlm")`.
 
 ``` r
-#devtools::install_github("yujinj/dlm")
+#devtools::install_github("yujinj/dlm", force=TRUE)
 library(dlm)
 ```
 
@@ -108,6 +108,16 @@ pairs(dlm.fit$X, cex = 0.2, labels = c("Brain\nCortex", "Adipose\nSubcutaneous",
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
+To evaluate the appropriateness of the fitted distribution shift model,
+we plot a distributional residual plot and distributional QQ plot.
+
+``` r
+par(mfrow = c(2, 1))
+plot(dlm.fit$lm.fit, which = c(1, 2))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
 ### More Examples
 
 We randomly select 6 tissues: Artery_Aorta, Vagina,
@@ -169,7 +179,7 @@ dlm.fit
 pairs(dlm.fit$X, cex = 0.2, labels = gsub("_", "\n", sampled_tissues))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 Let the target tissue be Esophagus_Muscularis.
 

@@ -10,7 +10,7 @@ output: github_document
 2. The latest development version can then be installied using `devtools::install_github("yujinj/dlm")`.
 
 ```{r}
-#devtools::install_github("yujinj/dlm")
+#devtools::install_github("yujinj/dlm", force=TRUE)
 library(dlm)
 ```
 
@@ -66,6 +66,13 @@ We present a pair plot where each row and column represents one tissue, and each
 ```{R}
 pairs(dlm.fit$X, cex = 0.2, labels = c("Brain\nCortex", "Adipose\nSubcutaneous", "Adipose\nVisceral\nOmentum", "Brain\nFrontal\nCortex", "Brain\nCerebellum"))
 ```
+
+To evaluate the appropriateness of the fitted distribution shift model, we plot a distributional residual plot and distributional QQ plot. 
+
+```{r, fig.width=5, fig.height=8}
+par(mfrow = c(2, 1))
+plot(dlm.fit$lm.fit, which = c(1, 2))
+```      
 
 ### More Examples
 
