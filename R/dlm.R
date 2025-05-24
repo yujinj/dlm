@@ -6,7 +6,7 @@
 #'
 #' @export
 #' @importFrom formula.tools get.vars
-dlm <- function(formula, test.function, data, whitening = TRUE){
+dlm <- function(formula, test.function, data, whitening = FALSE){
   call = match.call()
   terms = formula.tools::get.vars(formula, data = names(data))
 
