@@ -61,7 +61,7 @@ dlm <- function(formula, test.function, data, whitening = FALSE){
   summ$X = mat
 
   summ$lm.fit = lm.fit
-  class(summ) <- c("dlm", class(summ))
+  class(summ) <- c("dlm", "summary.lm")
 
   return(summ)
 }
