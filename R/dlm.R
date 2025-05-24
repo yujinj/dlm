@@ -60,6 +60,17 @@ dlm <- function(formula, test.function, data, whitening = TRUE){
   summ$aliased <- any(summ$aliased)
   summ$X = mat
 
+  summ$lm.fit = lm.fit
+  class(summ) <- c("dlm", class(summ))
+
   return(summ)
+}
+
+#' Plot method for dlm objects
+#' @param x A dlm object (output from dlm function)
+#' @param ... Additional arguments passed to plot.lm
+#' @export
+plot.dlm <- function(x, ...) {
+  plot(x$lm.fit, which = c(1, 2), ...)
 }
 
